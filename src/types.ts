@@ -31,4 +31,5 @@ export interface Message {
   content: string;
   date: string;
   id: string;
+  userId?: string;
 }

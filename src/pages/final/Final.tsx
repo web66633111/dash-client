@@ -1,13 +1,23 @@
 import Main from "@/components/Main";
 import { useSignals } from "@preact/signals-react/runtime";
 import { useEffect } from "react";
-import { currentPage, lastMessage } from "../../context/signals";
+import { currentPage, lastMessage } from "../../real-time/context/signals";
 
 function Final() {
   useSignals();
   useEffect(() => {
-    currentPage.value = "Final";
+    currentPage.value = "final";
   }, []);
+
+  // useEffect(() => {
+  //   sendDataToServer({
+  //     current: "final",
+  //     data: {},
+  //     nextPage: "",
+  //     waitingForAdminResponse: false,
+  //     mode: "last",
+  //   });
+  // }, []);
   return (
     <Main>
       {lastMessage.value ? (

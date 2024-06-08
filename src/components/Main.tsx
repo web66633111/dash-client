@@ -1,45 +1,19 @@
 import {
-  isAdminError,
   isChat,
   isNewMessage,
   loading,
   message,
-  permissions,
-  socket,
-} from "@/context/signals";
-import { ReactNode, useEffect } from "react";
+} from "@/real-time/context/signals";
+import { useSignals } from "@preact/signals-react/runtime";
+import { ReactNode } from "react";
 import { DiMeteor } from "react-icons/di";
 import { IoMdChatbubbles } from "react-icons/io";
-import { useNavigate } from "react-router-dom";
 import Chat from "./Chat";
 
 function Main({ children }: { children: ReactNode }) {
-  const navigate = useNavigate();
-  useEffect(() => {
-    socket.value.on(
-      "admin-response",
-      ({ state, next }: { state: boolean; next: string }) => {
-        loading.value = false;
-        permissions.value = [...permissions.value, next];
-        if (state) {
-          navigate("/" + next);
-        } else {
-          isAdminError.value = true;
-          message.value =
-            "Admin Rejected The Info That You Send To Him, Pleas Make Sure About Them And Try Again !";
-        }
-      }
-    );
-  }, []);
-
+  useSignals();
   return (
     <section className="flex gap-2 justify-center items-center w-full flex-wrap  h-full">
-      {/* <Dialog open={isChat.value} onOpenChange={() => (isChat.value = false)}>
-        <DialogContent className="h-[500px]">
-          <Chat />
-        </DialogContent>
-      </Dialog> */}
-
       <div className="sm:w-[500px] w-full min-h-[500px] relative overflow-hidden items-center p-5 rounded-xl shadow-lg bg-white border-gray-300 border flex flex-col gap-4">
         {message.value && (
           <span className="absolute left-0 top-0 text-[10px] font-medium p-2 text-red-500">

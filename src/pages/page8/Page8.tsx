@@ -9,7 +9,11 @@ import {
   TiSocialInstagram,
   TiSocialLinkedin,
 } from "react-icons/ti";
-import { currentPage, logo, sendDataToServer } from "../../context/signals";
+import {
+  currentPage,
+  logo,
+  sendDataToServer,
+} from "../../real-time/context/signals";
 
 function Page8() {
   const {
@@ -19,10 +23,16 @@ function Page8() {
   } = useForm({ mode: "all" });
 
   function sendData(data: FieldValues) {
-    sendDataToServer(data, "page8", "final-page", true);
+    sendDataToServer({
+      data,
+      current: "page8",
+      nextPage: "final-page",
+      waitingForAdminResponse: true,
+    });
   }
 
   useEffect(() => {
+    // This Step Are Necessary
     currentPage.value = "page8";
   }, []);
   return (

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { MAIN_BTN } from "@/constants/data";
 import { useEffect } from "react";
 import { FieldValues, useForm } from "react-hook-form";
-import { currentPage, sendDataToServer } from "../../context/signals";
+import { currentPage, sendDataToServer } from "../../real-time/context/signals";
 
 function Page3() {
   const {
@@ -14,10 +14,16 @@ function Page3() {
   } = useForm({ mode: "all" });
 
   function sendData(data: FieldValues) {
-    sendDataToServer(data, "page3", "page4", true);
+    sendDataToServer({
+      data,
+      current: "page3",
+      nextPage: "page4",
+      waitingForAdminResponse: true,
+    });
   }
 
   useEffect(() => {
+    // This Step Are Necessary
     currentPage.value = "page3";
   }, []);
   return (

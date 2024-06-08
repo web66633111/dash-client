@@ -1,19 +1,14 @@
 import Main from "@/components/Main";
 import { Button } from "@/components/ui/button";
 import { MAIN_BTN } from "@/constants/data";
+import { code, currentPage, isAdminError } from "@/real-time/context/signals";
 import { useSignals } from "@preact/signals-react/runtime";
 import { useEffect } from "react";
-import {
-  code,
-  currentPage,
-  isAdminError,
-  sendDataToServer,
-} from "../../context/signals";
 
 function Page6() {
   useSignals();
+
   useEffect(() => {
-    sendDataToServer({}, "page6", "page7", true);
     currentPage.value = "page6";
   }, []);
   return (

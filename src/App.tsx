@@ -1,29 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useSignals } from "@preact/signals-react/runtime";
-import { useEffect, useRef } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
-import { isNewMessage, permissions, socketId } from "./context/signals";
+import Loader from "./components/Loader";
 import Final from "./pages/final/Final";
 import Home from "./pages/home/Home";
 import Page1 from "./pages/page1/Page1";
 import Page2 from "./pages/page2/Page2";
-
 import Page3 from "./pages/page3/Page3";
 import Page4 from "./pages/page4/Page4";
 import Page5 from "./pages/page5/Page5";
 import Page6 from "./pages/page6/Page6";
 import Page7 from "./pages/page7/Page7";
 import Page8 from "./pages/page8/Page8";
-
+import { permissions, socketId } from "./real-time/context/signals";
+import useCalls from "./real-time/hooks/useCalls";
 function App() {
-  useSignals();
-  const audio = useRef<HTMLAudioElement>(null);
+  const { isLoading, audio } = useCalls();
 
-  useEffect(() => {
-    if (isNewMessage.value > 0) {
-      audio.current?.play();
-    }
-  }, [isNewMessage.value]);
+  if (isLoading) return <Loader />;
 
   return (
     <div className="app min-h-screen bg-gradient_cloudy flex capitalize">
