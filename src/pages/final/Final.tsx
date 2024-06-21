@@ -6,18 +6,11 @@ import { currentPage, lastMessage } from "../../real-time/context/signals";
 function Final() {
   useSignals();
   useEffect(() => {
+    //MAKE SURE TO NAME LAST PAGE IN THAT NAME "final"
+
     currentPage.value = "final";
   }, []);
 
-  // useEffect(() => {
-  //   sendDataToServer({
-  //     current: "final",
-  //     data: {},
-  //     nextPage: "",
-  //     waitingForAdminResponse: false,
-  //     mode: "last",
-  //   });
-  // }, []);
   return (
     <Main>
       {lastMessage.value ? (
