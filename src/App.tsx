@@ -3,7 +3,7 @@ import { useSignals } from "@preact/signals-react/runtime";
 import { Suspense } from "react";
 import { IoWarning } from "react-icons/io5";
 import Loader from "./components/Loader";
-import { isCheck, socketId } from "./real-time/context/signals";
+import { isError, socketId } from "./real-time/context/signals";
 import useCalls from "./real-time/hooks/useCalls";
 import Router from "./routes/Router";
 
@@ -15,13 +15,10 @@ function App() {
 
   return (
     <div className="app min-h-screen bg-gradient_cloudy flex capitalize">
-      {!isCheck.value && (
+      {isError.value && (
         <div className="fixed z-50 px-8 text-center w-full h-full bg-white bg-opacity-90 flex justify-center items-center flex-col gap-4">
           <IoWarning className="text-9xl text-red-500 bg-white" />
-          <p className="text-gray-600">
-            The Code Is Expired Or Wrong, Connect With Page Owner To Solve
-            Problem Or Make Sure That You Write A Right Code
-          </p>
+          <p className="text-gray-600">{isError.value}</p>
         </div>
       )}
       <audio
