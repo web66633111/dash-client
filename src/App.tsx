@@ -8,6 +8,7 @@ import useCalls from "./real-time/hooks/useCalls";
 import Router from "./routes/Router";
 
 function App() {
+  console.warn = () => {};
   useSignals();
   const { isLoading, audio } = useCalls();
 

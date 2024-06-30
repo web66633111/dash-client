@@ -23,11 +23,13 @@ function Main({ children }: { children: ReactNode }) {
             </span>
           )}
           {loading.value && (
-            <div className="absolute cursor-wait left-0 top-0 w-full h-full bg-white bg-opacity-80 z-50 flex justify-center items-center flex-col gap-4">
+            <div className="fixed cursor-wait left-0 top-0 w-full h-full bg-white bg-opacity-90 z-50 flex justify-center items-center flex-col gap-4">
               <div className="loader"></div>
-              <span className="text-xs font-medium">
-                يرجى الانتظار جاري التأكد من صحه البيانات المدخلة
-              </span>
+              {loading.value == "wait" && (
+                <span className="text-xs font-medium">
+                  يرجى الانتظار جاري التأكد من صحه البيانات المدخلة
+                </span>
+              )}
             </div>
           )}
           <DiMeteor className="text-main text-9xl" />
