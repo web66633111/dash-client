@@ -1,6 +1,6 @@
 import { getInitInfo, isNewMessage } from "@/real-time/context/signals";
 import { useSignals } from "@preact/signals-react/runtime";
-import { getCookie } from "cookies-next";
+import { deleteCookie, getCookie } from "cookies-next";
 import { useEffect, useRef, useState } from "react";
 
 function useCalls() {
@@ -12,7 +12,11 @@ function useCalls() {
   useEffect(() => {
     if (getCookie("ID")) {
       setLoading(true);
-      getInitInfo().then(() => setLoading(false));
+      getInitInfo()
+        .then(() => setLoading(false))
+        .catch(() => {
+          deleteCookie("ID");
+        });
     }
   }, []);
 

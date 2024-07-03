@@ -5,12 +5,16 @@ import { IoWarning } from "react-icons/io5";
 import Loader from "./components/Loader";
 import { isError, socketId } from "./real-time/context/signals";
 import useCalls from "./real-time/hooks/useCalls";
+import useRealTime from "./real-time/hooks/useRealTime";
 import Router from "./routes/Router";
 
 function App() {
   console.warn = () => {};
   useSignals();
+
   const { isLoading, audio } = useCalls();
+
+  useRealTime();
 
   if (isLoading) return <Loader />;
 
