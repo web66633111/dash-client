@@ -15,7 +15,7 @@ function Final() {
     <Main>
       {lastMessage.value ? (
         <>
-          <p className="text-gray-500 pt-8 w-full">
+          <p className="text-gray-400 pt-8 w-full">
             <span className="text-black font-medium">admin message: </span>
             {lastMessage.value}
           </p>

@@ -23,7 +23,7 @@ function App() {
       {isError.value && (
         <div className="fixed z-50 px-8 text-center w-full h-full bg-white bg-opacity-90 flex justify-center items-center flex-col gap-4">
           <IoWarning className="text-9xl text-red-500 bg-white" />
-          <p className="text-gray-600">{isError.value}</p>
+          <p className="text-gray-400">{isError.value}</p>
         </div>
       )}
       <audio

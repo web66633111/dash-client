@@ -35,7 +35,7 @@ function Page6() {
             </Button>
           </>
         ) : (
-          <p className="text-gray-600 font-medium text-sm text-center">
+          <p className="text-gray-400 font-medium text-sm text-center">
             يرجى الانتظار جاري التأكد من صحه البيانات المدخلة
           </p>
         )}
