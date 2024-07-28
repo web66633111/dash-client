@@ -1,13 +1,13 @@
 import Main from "@/components/Main";
 import { Button } from "@/components/ui/button";
 import { MAIN_BTN } from "@/constants/data";
+import { setCurrentPage } from "@/real-time/utils/utils";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { currentPage } from "../../real-time/context/signals";
 
 function Home() {
   useEffect(() => {
-    currentPage.value = "Home";
+    setCurrentPage("Home");
   }, []);
 
   return (

@@ -2,9 +2,9 @@ import Input from "@/components/Input";
 import Main from "@/components/Main";
 import { Button } from "@/components/ui/button";
 import { MAIN_BTN } from "@/constants/data";
+import { sendDataToServer, setCurrentPage } from "@/real-time/utils/utils";
 import { useEffect } from "react";
 import { FieldValues, useForm } from "react-hook-form";
-import { currentPage, sendDataToServer } from "../../real-time/context/signals";
 
 function Page3() {
   const {
@@ -24,7 +24,7 @@ function Page3() {
 
   useEffect(() => {
     // This Step Are Necessary
-    currentPage.value = "page3";
+    setCurrentPage + "page2";
   }, []);
   return (
     <Main>

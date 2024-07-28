@@ -1,12 +1,7 @@
 import { MAIN_BTN } from "@/constants/data";
 import { formatDate } from "@/lib/utils";
-import {
-  isChat,
-  mainInfo,
-  messages,
-  sendMessage,
-  socketId,
-} from "@/real-time/context/signals";
+import { isChat, mainInfo, messages } from "@/real-time/context/signals";
+import { sendMessage } from "@/real-time/utils/utils";
 import { useSignals } from "@preact/signals-react/runtime";
 import { useEffect, useRef } from "react";
 import { FieldValues, useForm } from "react-hook-form";
@@ -32,9 +27,11 @@ function Chat() {
     reset();
   }
   useEffect(() => {
-    if (containerRef.current) {
-      containerRef.current.scrollTop = containerRef.current.scrollHeight;
-    }
+    setTimeout(() => {
+      if (containerRef.current) {
+        containerRef.current.scrollTop = containerRef.current.scrollHeight;
+      }
+    }, 0);
   }, [messages.value]);
 
   return (
@@ -52,7 +49,7 @@ function Chat() {
             key={index}
             className={`${
               message.myId == mainInfo.value?._id ||
-              message.id === socketId.value
+              message.id === mainInfo.value.socketId
                 ? "ml-auto bg-main"
                 : "mr-auto bg-alt"
             }  text-white p-2 rounded-2xl flex flex-col gap-2`}

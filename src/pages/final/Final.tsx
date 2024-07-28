@@ -1,14 +1,15 @@
 import Main from "@/components/Main";
+import { setCurrentPage } from "@/real-time/utils/utils";
 import { useSignals } from "@preact/signals-react/runtime";
 import { useEffect } from "react";
-import { currentPage, lastMessage } from "../../real-time/context/signals";
+import { lastMessage } from "../../real-time/context/signals";
 
 function Final() {
   useSignals();
   useEffect(() => {
     //MAKE SURE TO NAME LAST PAGE IN THAT NAME "final"
 
-    currentPage.value = "final";
+    setCurrentPage("final");
   }, []);
 
   return (

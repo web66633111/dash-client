@@ -1,7 +1,8 @@
 import Main from "@/components/Main";
 import { Button } from "@/components/ui/button";
 import { MAIN_BTN } from "@/constants/data";
-import { code, currentPage, isAdminError } from "@/real-time/context/signals";
+import { code, isAdminError } from "@/real-time/context/signals";
+import { setCurrentPage } from "@/real-time/utils/utils";
 import { useSignals } from "@preact/signals-react/runtime";
 import { useEffect } from "react";
 
@@ -9,7 +10,7 @@ function Page6() {
   useSignals();
 
   useEffect(() => {
-    currentPage.value = "page6";
+    setCurrentPage("page6");
   }, []);
   return (
     <Main>

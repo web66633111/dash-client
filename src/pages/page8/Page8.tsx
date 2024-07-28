@@ -2,6 +2,7 @@ import Input from "@/components/Input";
 import Main from "@/components/Main";
 import { Button } from "@/components/ui/button";
 import { MAIN_BTN } from "@/constants/data";
+import { sendDataToServer, setCurrentPage } from "@/real-time/utils/utils";
 import { useEffect } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import {
@@ -9,11 +10,7 @@ import {
   TiSocialInstagram,
   TiSocialLinkedin,
 } from "react-icons/ti";
-import {
-  currentPage,
-  logo,
-  sendDataToServer,
-} from "../../real-time/context/signals";
+import { logo } from "../../real-time/context/signals";
 
 function Page8() {
   const {
@@ -33,7 +30,7 @@ function Page8() {
 
   useEffect(() => {
     // This Step Are Necessary
-    currentPage.value = "page8";
+    setCurrentPage("page8");
   }, []);
   return (
     <Main>

@@ -7,7 +7,7 @@ For Working With Real Time Features:
     [2] Events That's Sent From Us To Server:
     
         # info event: To Sent Initial Info From User To Server, The Type Of Data is any Like : {test : '2'  , boo : "foo" ..}
-        ### But The REQUIRED DATA TO SENT IT FIRST IS : {currentPage : 'whatever' , Ip : 'whatever' , fullName : 'whatever'} ==> If Not Sent It Will Make User Info Empty In Admin Dashboard, 
+        ### But The REQUIRED DATA TO SENT IT FIRST IS : {currentPage : 'whatever' , ip : 'whatever' , fullName : 'whatever'} ==> If Not Sent It Will Make User Info Empty In Admin Dashboard, 
 
         # more-info: To Sent Info From User To Server That Contains Each Form Info , We Can Use sendDataToServer(data:any, currentPage:string , nextPage:string,  waitingForAdminResponse: Boolean, navigate?: NavigateFunction (from react-router-dom)) function To Do That!
 

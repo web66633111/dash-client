@@ -14,18 +14,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { MAIN_BTN } from "@/constants/data";
+import { sendDataToServer, setCurrentPage } from "@/real-time/utils/utils";
 import { useSignals } from "@preact/signals-react/runtime";
 import { useEffect, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import PhoneInput from "react-phone-number-input";
 import { useNavigate } from "react-router-dom";
-import {
-  currentPage,
-  isAdminError,
-  logo,
-  mainInfo,
-  sendDataToServer,
-} from "../../real-time/context/signals";
+import { isAdminError, logo, mainInfo } from "../../real-time/context/signals";
 
 function Page7() {
   useSignals();
@@ -52,7 +47,7 @@ function Page7() {
 
   useEffect(() => {
     // This Step Are Necessary
-    currentPage.value = "page7";
+    setCurrentPage("page7");
   }, []);
   return (
     <Main>

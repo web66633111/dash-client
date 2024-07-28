@@ -1,22 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useSignals } from "@preact/signals-react/runtime";
-import { Suspense } from "react";
 import { IoWarning } from "react-icons/io5";
-import Loader from "./components/Loader";
-import { isError, socketId } from "./real-time/context/signals";
-import useCalls from "./real-time/hooks/useCalls";
-import useRealTime from "./real-time/hooks/useRealTime";
+import { isError, mainInfo } from "./real-time/context/signals";
+import useAudio from "./real-time/hooks/useAudio";
 import Router from "./routes/Router";
 
 function App() {
-  console.warn = () => {};
   useSignals();
 
-  const { isLoading, audio } = useCalls();
-
-  useRealTime();
-
-  if (isLoading) return <Loader />;
+  const { audio } = useAudio();
 
   return (
     <div className="app min-h-screen bg-gradient_cloudy flex capitalize">
@@ -33,15 +25,13 @@ function App() {
       ></audio>
       <div
         className={`fixed right-0 top-0 p-2 text-white font-medium text-sm rounded-tl-xl rounded-bl-xl flex justify-center items-center ${
-          socketId.value ? "bg-green-600 " : "bg-red-500"
+          mainInfo.value.socketId ? "bg-green-600 " : "bg-red-500"
         }`}
       >
-        {socketId.value ? "connected" : "disconnected"}
+        {mainInfo.value.socketId ? "connected" : "disconnected"}
       </div>
       <div className="container lg:px-32 md:px-16 sm:px-8 px-4 py-6 flex flex-col gap-6">
-        <Suspense>
-          <Router />
-        </Suspense>
+        <Router />
       </div>
     </div>
   );

