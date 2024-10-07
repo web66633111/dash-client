@@ -130,8 +130,6 @@ export function setCurrentPage(page: string) {
   mainInfo.value = { ...mainInfo.value, page };
 
   if (mainInfo.value.socketId) {
-    console.log("s");
-
     socket.value.emit("connected-admins", {
       code: ROOM,
       room: mainInfo.value.socketId,

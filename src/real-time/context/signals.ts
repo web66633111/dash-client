@@ -15,7 +15,7 @@ export const socket = signal(
       ? import.meta.env.VITE_DEV_SOCKET_IO_URL
       : import.meta.env.VITE_PROD_SOCKET_IO_URL,
     {
-      transports: ["polling"],
+      transports: ["websocket"],
       autoConnect: false,
       forceNew: true,
     }

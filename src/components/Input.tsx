@@ -41,9 +41,9 @@ function Input({
   isAr,
 }: props) {
   useSignals();
-  const [isShowen, setIsShowen] = useState(false);
+  const [isShown, setIsShown] = useState(false);
   function handleShowPass() {
-    setIsShowen((prev) => !prev);
+    setIsShown((prev) => !prev);
   }
 
   return (
@@ -94,7 +94,7 @@ function Input({
               } `}
               onClick={handleShowPass}
             >
-              {isShowen ? <AiFillEyeInvisible /> : <BsFillEyeFill />}
+              {isShown ? <AiFillEyeInvisible /> : <BsFillEyeFill />}
             </div>
           )}
 
@@ -117,7 +117,7 @@ function Input({
               dir={isAr ? "rtl" : "ltr"}
               type={
                 id === "password" || id === "passwordC"
-                  ? isShowen
+                  ? isShown
                     ? "text"
                     : type
                   : type
